@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+<h4 class="fw-bold mb-1">{{ p.name }}</h4>
+<div class="text-muted mb-3">
+  Diameter {{ p.diameter_m }} m • Kedalaman air {{ p.water_depth_m }} m • Volume {{ "%.2f"|format(p.volume_m3()) }} m³
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-5">
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <h6 class="fw-bold">Update Data Kolam</h6>
+        <form class="row g-2" method="post" action="{{ url_for('pond_update', pond_id=p.id) }}">
+          <div class="col-md-6">
+            <label class="form-label small">Diameter (m)</label>
+            <input name="diameter_m" class="form-control form-control-sm" value="{{ p.diameter_m }}">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small">Kedalaman air (m)</label>
+            <input name="water_depth_m" class="form-control form-control-sm" value="{{ p.water_depth_m }}">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small">Rate (ekor/m³)</label>
+            <input name="stocking_rate_fish_per_m3" class="form-control form-control-sm" value="{{ p.stocking_rate_fish_per_m3 }}">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small">Kapasitas (kg/m³)</label>
+            <input name="biomass_capacity_kg_per_m3" class="form-control form-control-sm" value="{{ p.biomass_capacity_kg_per_m3 }}">
+          </div>
+          <div class="col-12">
+            <button class="btn btn-dark btn-sm">Simpan</button>
+          </div>
+          <div class="col-12 small text-muted">
+            Kapasitas ekor = volume × rate • Kapasitas kg = volume × (kg/m³)
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h6 class="fw-bold">Tambah Event Ikan</h6>
+        <form class="row g-2" method="post" action="{{ url_for('pond_add_event', pond_id=p.id) }}">
+          <div class="col-md-5">
+            <label class="form-label small">Tanggal</label>
+            <input type="date" name="tgl" class="form-control form-control-sm">
+          </div>
+          <div class="col-md-7">
+            <label class="form-label small">Jenis</label>
+            <select name="event_type" class="form-select form-select-sm">
+              <option value="STOCK">STOCK (Tebar)</option>
+              <option value="HARVEST">HARVEST (Panen)</option>
+              <option value="MORTALITY">MORTALITY (Mati)</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small">Jumlah (ekor)</label>
+            <input name="count" class="form-control form-control-sm" value="0">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small">Berat (kg) (opsional)</label>
+            <input name="weight_kg" class="form-control form-control-sm" value="0">
+          </div>
+          <div class="col-12">
+            <label class="form-label small">Catatan</label>
+            <input name="note" class="form-control form-control-sm" placeholder="contoh: tebar benih / panen grade A">
+          </div>
+          <div class="col-12">
+            <button class="btn btn-dark btn-sm">Simpan Event</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="text-muted mb-2">
+          Kapasitas: {{ p.capacity_fish_count() }} ekor • {{ "%.2f"|format(p.capacity_biomass_kg()) }} kg
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead><tr><th>Tgl</th><th>Jenis</th><th class="text-end">Ekor</th><th class="text-end">Kg</th><th>Catatan</th></tr></thead>
+            <tbody>
+              {% for e in events %}
+              <tr>
+                <td>{{ e.tgl_date }}</td>
+                <td>{{ e.event_type }}</td>
+                <td class="text-end">{{ e.count }}</td>
+                <td class="text-end">{{ "%.2f"|format(e.weight_kg) }}</td>
+                <td class="text-muted">{{ e.note }}</td>
+              </tr>
+              {% endfor %}
+              {% if events|length == 0 %}
+              <tr><td colspan="5" class="text-muted">Belum ada event.</td></tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

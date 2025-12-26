@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="fw-bold m-0">Transaksi</h4>
+  <form class="d-flex gap-2" method="get">
+    <select name="tipe" class="form-select form-select-sm">
+      <option value="">Semua</option>
+      <option value="IN" {% if q_type=="IN" %}selected{% endif %}>IN (Pemasukan)</option>
+      <option value="OUT" {% if q_type=="OUT" %}selected{% endif %}>OUT (Pengeluaran)</option>
+    </select>
+    <select name="product_id" class="form-select form-select-sm">
+      <option value="">Semua Produk</option>
+      {% for p in products %}
+        <option value="{{ p.id }}" {% if q_product|int == p.id %}selected{% endif %}>{{ p.name }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-outline-secondary btn-sm">Filter</button>
+  </form>
+</div>
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <form class="row g-2" method="post" action="{{ url_for('transactions_add') }}">
+      <div class="col-md-2">
+        <label class="form-label small">Tanggal</label>
+        <input type="date" name="tgl" class="form-control form-control-sm">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small">Tipe</label>
+        <select name="tipe" class="form-select form-select-sm">
+          <option value="IN">IN</option>
+          <option value="OUT">OUT</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small">Produk</label>
+        <select name="product_id" class="form-select form-select-sm" required>
+          {% for p in products %}
+            <option value="{{ p.id }}">{{ p.name }} ({{ p.default_unit }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small">Deskripsi</label>
+        <input name="deskripsi" class="form-control form-control-sm" placeholder="jual telur / panen nila / pakan / dll">
+      </div>
+      <div class="col-md-1">
+        <label class="form-label small">Qty</label>
+        <input name="qty" class="form-control form-control-sm" value="0">
+      </div>
+      <div class="col-md-1">
+        <label class="form-label small">Unit</label>
+        <input name="unit" class="form-control form-control-sm" placeholder="rak/kg">
+      </div>
+      <div class="col-md-1">
+        <label class="form-label small">Harga</label>
+        <input name="unit_price" class="form-control form-control-sm" value="0">
+      </div>
+      <div class="col-12">
+        <button class="btn btn-dark btn-sm">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-sm align-middle m-0">
+      <thead>
+        <tr>
+          <th>Tgl</th><th>Tipe</th><th>Produk</th><th>Deskripsi</th>
+          <th class="text-end">Qty</th><th>Unit</th><th class="text-end">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for r in rows %}
+        <tr>
+          <td>{{ r.tgl }}</td>
+          <td><span class="badge {% if r.tipe=='IN' %}bg-success{% else %}bg-danger{% endif %}">{{ r.tipe }}</span></td>
+          <td>{{ r.product.name }}</td>
+          <td class="text-muted">{{ r.deskripsi }}</td>
+          <td class="text-end">{{ "%.2f"|format(r.qty) }}</td>
+          <td>{{ r.unit }}</td>
+          <td class="text-end">Rp {{ "{:,.0f}".format(r.total) }}</td>
+        </tr>
+      {% endfor %}
+      {% if rows|length == 0 %}
+        <tr><td colspan="7" class="text-muted">Belum ada data.</td></tr>
+      {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

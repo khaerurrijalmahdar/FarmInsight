@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h4 class="fw-bold mb-3">Kolam (Bulat)</h4>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-sm align-middle m-0">
+      <thead><tr><th>Nama</th><th>Diameter</th><th>Kedalaman Air</th><th>Volume</th><th></th></tr></thead>
+      <tbody>
+        {% for p in rows %}
+        <tr>
+          <td>{{ p.name }}</td>
+          <td>{{ p.diameter_m }} m</td>
+          <td>{{ p.water_depth_m }} m</td>
+          <td>{{ "%.2f"|format(p.volume_m3()) }} m³</td>
+          <td><a class="btn btn-outline-secondary btn-sm" href="{{ url_for('pond_detail', pond_id=p.id) }}">Detail</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

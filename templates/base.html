@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{{ title or "Farm MIS" }}</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootswatch theme (Bootstrap 5.3.8) -->
+  <!-- Ganti litera -> flatly / zephyr / lumen kalau mau -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/5.3.8/litera/bootstrap.min.css">
+
+  <style>
+    :root{
+      --radius: 16px;
+      --shadow: 0 10px 24px rgba(0,0,0,.06);
+      --page: 1120px;
+    }
+    body{
+      font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: #f6f7fb;
+    }
+    .wrap{ max-width: var(--page); margin: 0 auto; }
+    .navbar{ box-shadow: 0 6px 18px rgba(0,0,0,.05); }
+    .card{
+      border: 0;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .btn, .form-control, .form-select{ border-radius: 12px; }
+    .kpi-title{ font-size:.85rem; color: rgba(0,0,0,.55); }
+    .kpi-value{ font-size:1.6rem; font-weight:700; }
+    .table thead th{ color: rgba(0,0,0,.6); font-weight:600; }
+    .badge{ border-radius: 999px; }
+  </style>
+</head>
+
+<body>
+  {% set ep = request.endpoint or "" %}
+
+  {% if ep not in ["login", "login_post"] %}
+  <nav class="navbar navbar-expand-lg bg-white">
+    <div class="container-fluid wrap py-1">
+      <a class="navbar-brand fw-bold" href="{{ url_for('dashboard') }}">Farm MIS</a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navFarm">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navFarm">
+        <ul class="navbar-nav me-auto gap-lg-1">
+          <li class="nav-item"><a class="nav-link {% if ep=='dashboard' %}active fw-semibold{% endif %}" href="{{ url_for('dashboard') }}">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link {% if ep=='transactions' %}active fw-semibold{% endif %}" href="{{ url_for('transactions') }}">Transaksi</a></li>
+          <li class="nav-item"><a class="nav-link {% if ep in ['ponds','pond_detail'] %}active fw-semibold{% endif %}" href="{{ url_for('ponds') }}">Kolam</a></li>
+          <li class="nav-item"><a class="nav-link {% if ep in ['flocks','flock_detail'] %}active fw-semibold{% endif %}" href="{{ url_for('flocks') }}">Ayam</a></li>
+          <li class="nav-item"><a class="nav-link {% if ep=='settings' %}active fw-semibold{% endif %}" href="{{ url_for('settings') }}">Setting</a></li>
+        </ul>
+
+        <div class="d-flex align-items-center gap-2">
+          {% if current_user.is_authenticated %}
+            <span class="small text-muted">Hi, <b>{{ current_user.username }}</b></span>
+            <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('logout') }}">Logout</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+  {% endif %}
+
+  <main class="container-fluid wrap py-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="alert alert-{{ cat }} rounded-4 shadow-sm">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

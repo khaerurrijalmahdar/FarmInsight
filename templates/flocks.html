@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h4 class="fw-bold mb-3">Ayam (Flok)</h4>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-sm align-middle m-0">
+      <thead><tr><th>Flok</th><th>Jumlah awal</th><th></th><th></th></tr></thead>
+      <tbody>
+        {% for f in rows %}
+        <tr>
+          <td>{{ f.name }}</td>
+          <td>
+            <form class="d-flex gap-2" method="post" action="{{ url_for('flocks_update', flock_id=f.id) }}">
+              <input name="initial_count" class="form-control form-control-sm" style="max-width:120px" value="{{ f.initial_count }}">
+              <button class="btn btn-dark btn-sm">Update</button>
+            </form>
+          </td>
+          <td><a class="btn btn-outline-secondary btn-sm" href="{{ url_for('flock_detail', flock_id=f.id) }}">Detail</a></td>
+          <td class="text-muted small">Produksi telur dicatat per hari (butir).</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
